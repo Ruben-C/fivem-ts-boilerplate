@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const RemovePlugin = require('remove-files-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const buildPath = path.resolve(__dirname, 'dist');
 
@@ -25,18 +26,6 @@ const server = {
       failOnError: true,
       emitError: true,
       emitWarning: true,
-    }),
-    new RemovePlugin({
-      before: {
-        include: [
-          path.resolve(buildPath, 'server')
-        ]
-      },
-      watch: {
-        include: [
-          path.resolve(buildPath, 'server')
-        ]
-      }
     })
   ],
   optimization: {
@@ -71,18 +60,6 @@ const client = {
       failOnError: true,
       emitError: true,
       emitWarning: true,
-    }),
-    new RemovePlugin({
-      before: {
-        include: [
-          path.resolve(buildPath, 'client')
-        ]
-      },
-      watch: {
-        include: [
-          path.resolve(buildPath, 'client')
-        ]
-      }
     })
   ],
   optimization: {
@@ -97,4 +74,33 @@ const client = {
   },
 };
 
-module.exports = [server, client];
+const shared = {
+  entry: {},
+  module: {
+    rules: [{
+      test: path.resolve(__dirname, 'fxmanifest.lua'),
+      use: 'null-loader'
+    }]
+  },
+  plugins: [
+    new RemovePlugin({
+      before: {
+        include: [
+          buildPath
+        ]
+      },
+      watch: {
+        include: [
+          buildPath
+        ]
+      }
+    }),
+    new CopyPlugin({
+      patterns: [
+        './fxmanifest.lua'
+      ]
+    })
+  ]
+};
+
+module.exports = [shared, server, client];
