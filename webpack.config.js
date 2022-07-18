@@ -76,12 +76,6 @@ const client = {
 
 const shared = {
   entry: {},
-  module: {
-    rules: [{
-      test: path.resolve(__dirname, 'fxmanifest.lua'),
-      use: 'null-loader'
-    }]
-  },
   plugins: [
     new RemovePlugin({
       before: {
